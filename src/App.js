@@ -5,18 +5,36 @@ import { TodoList } from "./TodoList";
 import { TodoItem } from "./TodoItem";
 import { CreateTodoButton } from "./CreateTodoButton";
 
-const defaultTodos = [
-  { text: "Leer libro Mario Mendoza", completed: true },
-  { text: "Estudiar React", completed: false },
-  { text: "Trabajar jiras de tigo", completed: false },
-  { text: "Pasear a Satanas", completed: true },
-  { text: "IR A CINE CON SATANAS", completed: true },
-];
+// const defaultTodos = [
+//   { text: "Leer libro Mario Mendoza", completed: true },
+//   { text: "Estudiar React", completed: false },
+//   { text: "Trabajar jiras de tigo", completed: false },
+//   { text: "Pasear a Satanas", completed: true },
+//   { text: "IR A CINE CON SATANAS", completed: true },
+// ];
+
+// const stringifiedTodos = JSON.stringify(defaultTodos);
+// localStorage.setItem('TODOS_V1', stringifiedTodos);
+// // localStorage.removeItem('TODOS_V1');
 
 function App() {
+  //leemos de localStorage la cadena de caracteres que tiene guardada
+  const localStorageTodos = localStorage.getItem("TODOS_V1");
+
+  let parsedTodos;
+
+  if (!localStorageTodos) {
+    localStorage.setItem("TODOS_V1", JSON.stringify([]));
+    parsedTodos = [];
+  } else {
+    //parseamos o convertimos a la estructura de datos original
+    parsedTodos = JSON.parse(localStorageTodos);
+  }
+
+  const [todos, setTodos] = React.useState(parsedTodos);
+
   const [searchValue, setSearchValue] = React.useState("");
   console.info("Los usuarios estan buscando:", searchValue);
-  const [todos, setTodos] = React.useState(defaultTodos);
 
   //Estados derivados
   const completedTodos = todos.filter((todo) => !!todo.completed).length;
@@ -28,6 +46,11 @@ function App() {
     return todoText.includes(searchText);
   });
 
+  const saveTodos = (newTodos) => {
+    localStorage.setItem("TODOS_V1", JSON.stringify(newTodos));
+    setTodos(newTodos);
+  };
+
   //funcion para marcar un TODO completado
   const completeTodo = (text) => {
     //creo un nuevo array con lo que tiene todos
@@ -35,7 +58,7 @@ function App() {
     const todoIndex = newTodos.findIndex((todo) => todo.text === text);
     //accedo por el indice al todo que quiero modifica
     newTodos[todoIndex].completed = true;
-    setTodos(newTodos);
+    saveTodos(newTodos);
   };
 
   //Encapsulamos la funcion dentro de otra funcion
@@ -47,7 +70,7 @@ function App() {
     // newTodos[todoIndex].completed = false;
     //elimiar con splice ubico el indice y elimino el numero de items a borrar
     newTodos.splice(todoIndex, 1);
-    setTodos(newTodos);
+    saveTodos(newTodos);
   };
 
   return (

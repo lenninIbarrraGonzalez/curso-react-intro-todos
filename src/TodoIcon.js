@@ -14,6 +14,7 @@ const iconTypes = {
 function TodoIcon({ type, color, onClick }) {
   return (
     <span className={`Icon-container Icon-container-${type}`} onClick={onClick}>
+      {/* condicionales reducidos */}
       {iconTypes[type](color)}
     </span>
   );
